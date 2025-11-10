@@ -15,3 +15,17 @@ export interface LicenseResult {
   enterprise: LicenseInfo;
   sources: Source[];
 }
+
+export interface HistoryItem {
+  id: number;
+  softwareName: string;
+  result: LicenseResult;
+}
+
+export interface BulkResultItem {
+  id: number;
+  softwareName: string;
+  result: LicenseResult | null;
+  status: 'pending' | 'loading' | 'success' | 'error';
+  error?: string;
+}

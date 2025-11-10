@@ -1,30 +1,16 @@
 import React from 'react';
-import type { LicenseResult, LicenseInfo, LicenseType } from '../types';
+import type { LicenseResult, LicenseInfo } from '../types';
+import { LicenseBadge } from './LicenseBadge';
 
 interface ResultDisplayProps {
   result: LicenseResult;
 }
 
 const LicenseCard: React.FC<{ title: string; info: LicenseInfo }> = ({ title, info }) => {
-    const getTypeStyles = (type: LicenseType) => {
-        switch (type) {
-            case '프리웨어':
-                return 'bg-green-500/20 text-green-300 border-green-500/50';
-            case '쉐어웨어':
-                return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/50';
-            case '상용':
-                return 'bg-blue-500/20 text-blue-300 border-blue-500/50';
-            default:
-                return 'bg-gray-500/20 text-gray-300 border-gray-500/50';
-        }
-    };
-
     return (
         <div className="bg-gray-800/50 p-6 rounded-lg border border-dark-border h-full flex flex-col">
             <h3 className="text-lg font-semibold text-light-text mb-3">{title}</h3>
-            <div className={`inline-block self-start px-3 py-1 text-sm font-semibold rounded-full border ${getTypeStyles(info.type)}`}>
-                {info.type}
-            </div>
+            <LicenseBadge type={info.type} />
             <p className="text-medium-text mt-4 leading-relaxed flex-grow">{info.reasoning}</p>
         </div>
     );
