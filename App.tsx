@@ -7,7 +7,6 @@ import { ErrorDisplay } from './components/ErrorDisplay';
 import { History } from './components/History';
 import { Tabs } from './components/Tabs';
 import { BulkCheckView } from './components/BulkCheckView';
-import { RationaleDisplay } from './components/RationaleDisplay';
 import { checkSoftwareLicense } from './services/geminiService';
 import type { LicenseResult, HistoryItem, BulkResultItem } from './types';
 
@@ -30,16 +29,6 @@ const App: React.FC = () => {
   const [bulkResults, setBulkResults] = useState<BulkResultItem[]>([]);
   const [isBulkLoading, setIsBulkLoading] = useState<boolean>(false);
 
-  // Settings state
-  const [isAutoSaveEnabled, setIsAutoSaveEnabled] = useState<boolean>(() => {
-    try {
-      const saved = localStorage.getItem('autoSaveEnabled');
-      return saved !== null ? JSON.parse(saved) : true;
-    } catch {
-      return true;
-    }
-  });
-
 
   useEffect(() => {
     try {
@@ -57,15 +46,6 @@ const App: React.FC = () => {
     localStorage.setItem('licenseCheckerHistory', JSON.stringify(history));
   }, [history]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('autoSaveEnabled', JSON.stringify(isAutoSaveEnabled));
-    } catch (error) {
-      console.error("Failed to save auto-save setting to localStorage", error);
-    }
-  }, [isAutoSaveEnabled]);
-
-
   const handleCheck = useCallback(async () => {
     if (!softwareName.trim()) {
       setError('라이선스를 확인할 소프트웨어 이름을 입력해주세요.');
@@ -82,18 +62,16 @@ const App: React.FC = () => {
       const licenseResult = await checkSoftwareLicense(softwareName);
       setResult(licenseResult);
       
-      if (isAutoSaveEnabled) {
-        const newHistoryItem: HistoryItem = {
-          id: Date.now(),
-          softwareName: softwareName.trim(),
-          result: licenseResult,
-        };
+      const newHistoryItem: HistoryItem = {
+        id: Date.now(),
+        softwareName: softwareName.trim(),
+        result: licenseResult,
+      };
 
-        setHistory(prevHistory => [
-          newHistoryItem,
-          ...prevHistory.filter(item => item.softwareName.toLowerCase() !== softwareName.trim().toLowerCase())
-        ]);
-      }
+      setHistory(prevHistory => [
+        newHistoryItem,
+        ...prevHistory.filter(item => item.softwareName.toLowerCase() !== softwareName.trim().toLowerCase())
+      ]);
 
     } catch (err) {
       console.error(err);
@@ -102,7 +80,7 @@ const App: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [softwareName, isAutoSaveEnabled]);
+  }, [softwareName]);
   
   const handleSoftwareNameChange = (name: string) => {
     setSoftwareName(name);
@@ -147,18 +125,16 @@ const App: React.FC = () => {
         setBulkResults(prev => prev.map(item =>
           item.id === initialResults[i].id ? { ...item, status: 'success', result: licenseResult } : item
         ));
-        
-        if (isAutoSaveEnabled) {
-          const newHistoryItem: HistoryItem = {
-            id: Date.now() + i,
-            softwareName: name,
-            result: licenseResult,
-          };
-          setHistory(prevHistory => [
-            newHistoryItem,
-            ...prevHistory.filter(hItem => hItem.softwareName.toLowerCase() !== name.toLowerCase())
-          ]);
-        }
+
+        const newHistoryItem: HistoryItem = {
+          id: Date.now() + i,
+          softwareName: name,
+          result: licenseResult,
+        };
+        setHistory(prevHistory => [
+          newHistoryItem,
+          ...prevHistory.filter(hItem => hItem.softwareName.toLowerCase() !== name.toLowerCase())
+        ]);
 
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : '알 수 없는 오류가 발생했습니다.';
@@ -169,7 +145,7 @@ const App: React.FC = () => {
     }
 
     setIsBulkLoading(false);
-  }, [bulkInput, isAutoSaveEnabled]);
+  }, [bulkInput]);
 
   return (
     <div className="min-h-screen bg-dark-bg text-light-text font-sans antialiased">
@@ -198,8 +174,6 @@ const App: React.FC = () => {
                   history={history}
                   onItemClick={handleHistoryClick}
                   selectedSoftwareName={selectedSoftwareName}
-                  isAutoSaveEnabled={isAutoSaveEnabled}
-                  onAutoSaveChange={setIsAutoSaveEnabled}
                 />
             </div>
           </main>
@@ -214,8 +188,6 @@ const App: React.FC = () => {
             />
           </main>
         )}
-
-        <RationaleDisplay />
       </div>
     </div>
   );

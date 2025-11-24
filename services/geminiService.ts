@@ -1,13 +1,11 @@
 import { GoogleGenAI } from "@google/genai";
 import type { LicenseResult } from '../types';
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-
-if (!apiKey) {
-    throw new Error("VITE_GEMINI_API_KEY environment variable is not set.");
+if (!process.env.API_KEY) {
+    throw new Error("API_KEY environment variable is not set.");
 }
 
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const cleanJson = (text: string): string => {
     const match = text.match(/```json\s*([\s\S]*?)\s*```/);

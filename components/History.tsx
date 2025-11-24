@@ -1,29 +1,26 @@
 import React from 'react';
 import type { HistoryItem } from '../types';
-import { ToggleSwitch } from './ToggleSwitch';
 
 interface HistoryProps {
     history: HistoryItem[];
     onItemClick: (item: HistoryItem) => void;
     selectedSoftwareName: string | null;
-    isAutoSaveEnabled: boolean;
-    onAutoSaveChange: (enabled: boolean) => void;
 }
 
 const HistoryIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg xmlns="http://www.w.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
 );
 
 const DownloadIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <svg xmlns="http://www.w.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
     </svg>
 );
 
 
-export const History: React.FC<HistoryProps> = ({ history, onItemClick, selectedSoftwareName, isAutoSaveEnabled, onAutoSaveChange }) => {
+export const History: React.FC<HistoryProps> = ({ history, onItemClick, selectedSoftwareName }) => {
     
     const escapeCSV = (field: string | undefined): string => {
         if (field === null || field === undefined) {
@@ -63,7 +60,7 @@ export const History: React.FC<HistoryProps> = ({ history, onItemClick, selected
 
     return (
         <aside className="bg-dark-card border border-dark-border rounded-lg p-6 h-full sticky top-8 animate-fade-in">
-            <div className="flex justify-between items-center pb-4 border-b border-dark-border">
+            <div className="flex justify-between items-center">
                 <div className="flex items-center gap-3">
                     <HistoryIcon />
                     <h2 className="text-xl font-bold text-light-text">검사 기록</h2>
@@ -78,18 +75,9 @@ export const History: React.FC<HistoryProps> = ({ history, onItemClick, selected
                     <span>내보내기</span>
                 </button>
             </div>
-
-            <div className="py-4">
-              <ToggleSwitch
-                id="auto-save-toggle"
-                label="기록 자동 저장"
-                checked={isAutoSaveEnabled}
-                onChange={onAutoSaveChange}
-              />
-            </div>
             
             {history.length > 0 ? (
-                <ul className="space-y-2 mt-4 pt-4 border-t border-dark-border overflow-y-auto max-h-[55vh] pr-2 -mr-2">
+                <ul className="space-y-2 mt-4 overflow-y-auto max-h-[60vh] pr-2 -mr-2">
                     {history.map(item => (
                         <li key={item.id}>
                             <button
@@ -106,18 +94,9 @@ export const History: React.FC<HistoryProps> = ({ history, onItemClick, selected
                     ))}
                 </ul>
             ) : (
-                <div className="text-center text-medium-text mt-12 pt-4 border-t border-dark-border">
-                     {isAutoSaveEnabled ? (
-                        <>
-                            <p>검사 기록이 없습니다.</p>
-                            <p className="text-sm mt-1">소프트웨어를 검사하면 여기에 기록이 남습니다.</p>
-                        </>
-                    ) : (
-                        <>
-                            <p>기록 자동 저장이 비활성화되어 있습니다.</p>
-                            <p className="text-sm mt-1">설정을 켜면 검사 기록이 여기에 표시됩니다.</p>
-                        </>
-                    )}
+                <div className="text-center text-medium-text mt-12">
+                    <p>검사 기록이 없습니다.</p>
+                    <p className="text-sm mt-1">소프트웨어를 검사하면 여기에 기록이 남습니다.</p>
                 </div>
             )}
         </aside>
